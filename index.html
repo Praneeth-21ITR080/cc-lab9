@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CC Ex-9</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #001f3f; /* Navy blue background color */
+            color: #fff; /* White text color */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 45%;
+            padding: 40px; /* Increased padding for better spacing */
+            background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent black background */
+            border-radius: 20px; /* Increased border radius for softer edges */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); /* Larger box shadow for depth */
+            text-align: center;
+        }
+
+        h1, h2, h3 {
+            color: #0074D9; /* Navy blue color for headings */
+            text-shadow: 2px 2px 2px #000; /* Slightly larger text shadow */
+        }
+
+        button {
+            background-color: #0074D9; /* Navy blue background color */
+            color: #fff; /* White text color */
+            padding: 15px 30px; /* Larger padding for button */
+            border: none;
+            border-radius: 30px; /* Increased border radius */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 18px; /* Slightly larger font size */
+            font-weight: bold;
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #005CAF; /* Darker navy blue on hover */
+        }
+
+        .location-details {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px; /* Increased padding */
+            border-radius: 12px; /* Softer edges */
+            margin-bottom: 30px; /* More space between location details and iframe */
+        }
+
+        p {
+            color: #ddd; /* Lighter text color */
+            font-size: 16px; /* Slightly smaller font size */
+        }
+
+        iframe {
+            display: block;
+            margin: 0 auto;
+            border: 2px solid #0074D9; /* Navy blue border for iframe */
+            border-radius: 12px; /* Rounded edges for iframe */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); /* Matching box shadow with container */
+        }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>CC_Ex:9</h2>
+        <h3>Praneeth B 21ITR080</h3> <br><br>
+        <p>Click below to get your location :</p>
+        <button onclick="getLocation()">Find Location</button><br><br>
+       
+        <div class="location-details" id="location">
+            <!-- Latitude and longitude details will be displayed here -->
+        </div>
+        
+        <iframe width="100%" height="300" src="https://thingspeak.com/channels/2530475/charts/1?bgcolor=%23ffffff&color=%230074D9&dynamic=true&results=60&type=line&update=15" frameborder="0" allowfullscreen></iframe>
+    </div> 
+
+    <script>
+        // Function to get current location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Function to display location data
+        function showPosition(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            var locationDetails = document.getElementById("location");
+            locationDetails.innerHTML = "<p>Latitude: " + latitude + "<br>Longitude: " + longitude + "</p>";
+
+            // Call function to send data to ThingSpeak
+            sendDataToThingSpeak(latitude, longitude);
+        }
+
+        // Function to send data to ThingSpeak
+        function sendDataToThingSpeak(latitude, longitude) {
+            var apiKey = "IOZF8MGBS12M68U4";
+            var url = "https://api.thingspeak.com/update?api_key=" + apiKey + "&field1=" + latitude + "&field2=" + longitude;
+
+            // Send data using fetch API
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data sent to ThingSpeak:', data);
+                })
+                .catch(error => {
+                    console.error('Error sending data to ThingSpeak:', error);
+                });
+        }
+    </script>
+</body>
+</html>
